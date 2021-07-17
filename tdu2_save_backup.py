@@ -6,6 +6,7 @@ import shutil
 CSIDL_PERSONAL = 5 # Documents Path CSIDL
 TDU2_SAVEGAME_PATH = os.path.join('Eden Games', 'Test Drive Unlimited 2', 'savegame')
 DATE_FORMAT_STRING = '%Y-%m-%d_%H-%M-%S_'
+MAX_BACKUPS_PER_SAVE = 10
 
 # get save path
 documents_path = ctypes.create_unicode_buffer(ctypes.wintypes.MAX_PATH)
@@ -28,3 +29,11 @@ current_date = datetime.now().strftime(DATE_FORMAT_STRING)
 
 for savegame in savegame_list:
     shutil.make_archive(current_date + savegame, 'zip', savegame)
+
+# clear older backups
+backup_list = [x for x in os.listdir() if os.path.isfile(x) and os.path.splitext(x)[1] == '.zip']
+
+max_allowed_backups = len(savegame_list) * MAX_BACKUPS_PER_SAVE
+
+while len(backup_list) > max_allowed_backups:
+    os.remove(backup_list.pop(0))
